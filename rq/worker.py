@@ -985,6 +985,13 @@ class BaseWorker:
                     'Could not connect to Redis instance: %s Retrying in %d seconds...', conn_err, connection_wait_time
                 )
                 time.sleep(connection_wait_time)
+
+                # Attempt to reconnect
+                try:
+                    self.subscribe()
+                except Exception:
+                    pass
+
                 connection_wait_time *= self.exponential_backoff_factor
                 connection_wait_time = min(connection_wait_time, self.max_connection_wait_time)
             else:
